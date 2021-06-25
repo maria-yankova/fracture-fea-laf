@@ -1,4 +1,4 @@
-name: abaqus_parse_env
+name: fracture_fea_laf_env
 dependencies:
 - python>=3.6
 - pip

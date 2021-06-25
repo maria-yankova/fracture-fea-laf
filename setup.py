@@ -7,7 +7,7 @@ from setuptools import find_packages, setup
 
 def get_version():
 
-    ver_file = 'abaqus_parse/_version.py'
+    ver_file = 'fracture_fea_laf/_version.py'
     with open(ver_file) as handle:
         ver_str_line = handle.read()
 
