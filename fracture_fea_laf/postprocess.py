@@ -178,3 +178,53 @@ def thinning_function(obstacle_distance, shear_stress, temperature):
     thinf = norm_factor * fk
         
     return thinf
+
+
+def calc_sw_diff(sw_data, n0, ri, mi, gdata_all, skipped_lines_all):
+    
+    sw0 = sw_data[n0][mi][gdata_all[n0]['j0_idx'] - np.array(skipped_lines_all[n0])]
+    swi = sw_data[ri][mi][gdata_all[ri]['j0_idx'] - np.array(skipped_lines_all[ri])]
+    
+    return (swi - sw0) * 100 / swi
+
+def pred_j0(pred_i, sw_data, idxm, jskipped_lines_all, gdata_all, temps, tol=0.002):
+    """
+    Predict the characteristic fracture toughness J0 based on the Weibull stress
+
+    Parameters:
+    -----------
+    pred_i : integer
+        Index basis for prediction (zero-based)
+    sw_data :  a list of length i of lists of length Ni
+        Weibull stress data for i temperatures and Ni time increments for each temperature 
+    idxm : integer
+        Index of shape parameter m to be used
+    jskipped_lines_all : list
+        Lines to be skipped in the fracture toughness data for each temperature due to no Weibull data, e.g. when J is very small and there is limited plasticity.
+    gdata_all :  list of dicts
+       Fracture toughness data for each temperature. Here, the 'j0' data is used from the dictionary.
+    temps : ndarray of size (i,)
+        Temperatures (in degrees Celsius)
+    """
+    sw_pred = sw_data[pred_i][idxm][gdata_all[pred_i]['j0_idx']-jskipped_lines_all[pred_i]]
+ 
+    print('Weibull stress: ', (sw_pred))
+    print('gdata_all[pred_i]', gdata_all[pred_i]['j0'])
+    for ri, sw_r in enumerate(sw_data):
+        sw = np.array(sw_r[idxm])
+        print('Temperature: ', str(temps[ri]))
+        if ri != pred_i:
+            j0_pred = np.where(np.isclose(sw, sw_pred, tol))
+            shift_idx = len(gdata_all[ri]['gdata']['jintc']) - len(sw)
+            print('shift_idx: ',shift_idx)
+#             print('   j0_pred: ', j0_pred)
+#             print(' sw: ', np.array(sw).shape)
+#             print(type(j0_pred))
+            jpred = gdata_all[ri]['gdata']['jintc'][j0_pred[0]+shift_idx]
+
+            if len(jpred)>0:
+                print('   jpred: {:4.2f}'.format(jpred.values[0]))
+        else:
+            print('basis for prediction')
+
+        print('###')
