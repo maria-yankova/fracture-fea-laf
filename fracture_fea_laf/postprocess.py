@@ -208,23 +208,21 @@ def pred_j0(pred_i, sw_data, idxm, jskipped_lines_all, gdata_all, temps, tol=0.0
     """
     sw_pred = sw_data[pred_i][idxm][gdata_all[pred_i]['j0_idx']-jskipped_lines_all[pred_i]]
  
-    print('Weibull stress: ', (sw_pred))
-    print('gdata_all[pred_i]', gdata_all[pred_i]['j0'])
+    # print('Weibull stress: ', (sw_pred))
+    
     for ri, sw_r in enumerate(sw_data):
         sw = np.array(sw_r[idxm])
         print('Temperature: ', str(temps[ri]))
         if ri != pred_i:
             j0_pred = np.where(np.isclose(sw, sw_pred, tol))
             shift_idx = len(gdata_all[ri]['gdata']['jintc']) - len(sw)
-            print('shift_idx: ',shift_idx)
-#             print('   j0_pred: ', j0_pred)
-#             print(' sw: ', np.array(sw).shape)
-#             print(type(j0_pred))
+            # print('shift_idx: ', shift_idx)
             jpred = gdata_all[ri]['gdata']['jintc'][j0_pred[0]+shift_idx]
 
             if len(jpred)>0:
-                print('   jpred: {:4.2f}'.format(jpred.values[0]))
+                print('Predicted J0 = {:4.2f}'.format(jpred.values[0]))
         else:
             print('basis for prediction')
+            print('J0 = {:4.2f}'.format(gdata_all[pred_i]['j0']))
 
         print('###')
