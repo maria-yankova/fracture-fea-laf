@@ -55,6 +55,10 @@ setup(
     description="",
     install_requires=[
         'numpy',
+        'scipy',
+        'matplotlib',
+        'plotly',
+        'pandas',
     ],
     license="MIT license",
     long_description=get_long_description() + '\n\n' + get_changelog(),
