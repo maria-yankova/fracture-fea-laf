@@ -59,6 +59,7 @@ setup(
         'matplotlib',
         'plotly',
         'pandas',
+        'jupyter',
     ],
     license="MIT license",
     long_description=get_long_description() + '\n\n' + get_changelog(),
