@@ -59,7 +59,7 @@ setup(
         'matplotlib',
         'plotly',
         'pandas',
-        'jupyter>=5.0',
+        'jupyter',
         'vecmaths',
         'more_itertools',
     ],
