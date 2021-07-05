@@ -57,3 +57,16 @@ def order_coplanar_points(points, normal, anticlockwise=True):
 
     return ang_order
 
+def circle_points(r, n, centre):
+    t = np.linspace(0, 2*np.pi, n)
+    x = r * np.cos(t) + centre[0]
+    y = r * np.sin(t) + centre[1]
+
+    return np.c_[x, y]
+
+def search_keep_order(A, B):
+    sort_idx = A.argsort()
+    out = sort_idx[np.searchsorted(A, B, sorter = sort_idx)]
+    idx_layer_0 = np.nonzero(B[:,None] == A)[1]
+    
+    return idx_layer_0
