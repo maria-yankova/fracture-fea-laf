@@ -14,3 +14,4 @@ dependencies:
 - pandas
 - plotly
 - matplotlib
+- more_itertools
