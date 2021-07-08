@@ -4,14 +4,14 @@ def standard_specimen(spec_type, dimensions='2D', fraction='half', aw_ratio=0.5)
 
     Parameters
     ----------
-    spec_type
-        CT-1T/SENB
-    dimensions
-        2D/3D
-    fraction
-        quarter/half/full
-    aw_ratio
-        fix at 0.5 for CT
+    spec_type : string
+        Geometry of the specimen, one of 'ct-1t' | 'charpy-senb-0.5' | 'charpy-senb-0.2'. More geometries can be added.
+    dimensions : string
+        One of '2D' | '3D'
+    fraction : string
+        One of 'quarter' | 'half' | 'full'
+    aw_ratio : float
+        Fixed at 0.5 for CT and variable for SENB.
     
     Returns
     -------
@@ -32,19 +32,19 @@ def standard_specimen(spec_type, dimensions='2D', fraction='half', aw_ratio=0.5)
             'E': 60,
             'F': 37.5
         },
-    'senb-0.5':{
+    'charpy-senb-0.5':{
             'a/w': 0.5,
             'W': 10,
             'L': 55,
             'B': 10,
     },
-    'senb-0.1':{
+    'charpy-senb-0.1':{
             'a/w': 0.1,
             'W': 10,
             'L': 55,
             'B': 10,
     },
-      'senb-0.2':{
+      'charpy-senb-0.2':{
             'a/w': 0.2,
             'W': 10,
             'L': 55,
@@ -53,22 +53,22 @@ def standard_specimen(spec_type, dimensions='2D', fraction='half', aw_ratio=0.5)
     }
     specimen = specimens_dims[spec_type]
 
-    if dimensions=='2D':
-        specimen.pop('B')
-        
+
     if spec_type=='ct-1t':
         if fraction=='half':
             specimen['E'] *= 0.5
         elif fraction=='quarter':
             specimen['E'] *= 0.5
             specimen['B'] *= 0.5
-    elif spec_type[:4]=='senb':
-
+    elif spec_type[:4]=='char':
         if fraction=='half':
             specimen['L'] *= 0.5
         elif fraction=='quarter':
             specimen['L'] *= 0.5
             specimen['B'] *= 0.5
-
+    
+    if dimensions=='2D':
+        specimen.pop('B')
+        
     return specimens_dims[spec_type]
     
