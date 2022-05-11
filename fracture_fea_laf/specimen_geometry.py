@@ -32,6 +32,16 @@ def standard_specimen(spec_type, dimensions='2D', fraction='half', aw_ratio=0.5)
             'E': 60,
             'F': 37.5
         },
+    'ct-2t':{
+            'a/w': 0.5,
+            'W': 100,
+            'A': 125.0,
+            'B': 50,
+            'C': 25.0,
+            'D': 51.0,
+            'E': 120,
+            'F': 75.0,
+        },
     'charpy-senb-0.5':{
             'a/w': 0.5,
             'W': 10,
@@ -54,7 +64,7 @@ def standard_specimen(spec_type, dimensions='2D', fraction='half', aw_ratio=0.5)
     specimen = specimens_dims[spec_type]
 
 
-    if spec_type=='ct-1t':
+    if spec_type[:2]=='ct':
         if fraction=='half':
             specimen['E'] *= 0.5
         elif fraction=='quarter':
