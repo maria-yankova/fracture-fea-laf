@@ -5,7 +5,7 @@ def standard_specimen(spec_type, dimensions='2D', fraction='half', aw_ratio=0.5)
     Parameters
     ----------
     spec_type : string
-        Geometry of the specimen, one of 'ct-1t' | 'charpy-senb-0.5' | 'charpy-senb-0.2'. More geometries can be added.
+        Geometry of the specimen, one of 'ct-1t' | 'ct-2t' |'charpy-senb-0.5' | 'charpy-senb-0.2'. More geometries can be added. Compact tension (ct) specimen geometry parameters as in Fig. 5 (a) [1]. Single-edge notched bend (senb) specimen geometry parameters as follows: length 'L', width 'W' and thickness 'B'. In both geometries the 'a/w' parameter refers to the ratio of the crack length to specimen width. 
     dimensions : string
         One of '2D' | '3D'
     fraction : string
@@ -19,6 +19,10 @@ def standard_specimen(spec_type, dimensions='2D', fraction='half', aw_ratio=0.5)
         a/w, W, A, C, D, E, F
     if 3D:h
         a/w, W, A, B, C, D, E, F
+
+    References
+    ----------
+    [1] Heerens J, Hellmann D. Development of the Euro fracture toughness dataset. Eng Fract Mech 2002;69:421–49. https://doi.org/10.1016/S0013-7944(01)00067-4.
     """
     
     specimens_dims = {
