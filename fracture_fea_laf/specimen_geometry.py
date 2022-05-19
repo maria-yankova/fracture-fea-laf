@@ -5,7 +5,7 @@ def standard_specimen(spec_type, dimensions='2D', fraction='half', aw_ratio=0.5)
     Parameters
     ----------
     spec_type : string
-        Geometry of the specimen, one of 'ct-1t' | 'ct-2t' |'charpy-senb-0.5' | 'charpy-senb-0.2'. More geometries can be added. Compact tension (ct) specimen geometry parameters as in Fig. 5 (a) [1]. Single-edge notched bend (senb) specimen geometry parameters as follows: length 'L', width 'W' and thickness 'B'. In both geometries the 'a/w' parameter refers to the ratio of the crack length to specimen width. 
+        Geometry of the specimen, one of 'ct-1t' | 'ct-1t-jacobs' | 'ct-2t' |'charpy-senb-0.5' | 'charpy-senb-0.2'. More geometries can be added, where the beginning og the geometry name should be kept the same, e.g. 'ct' for compact tension. Compact tension (ct) specimen geometry parameters as in Fig. 5 (a) [1]. Single-edge notched bend (senb) specimen geometry parameters as follows: length 'L', width 'W' and thickness 'B'. In both geometries the 'a/w' parameter refers to the ratio of the crack length to specimen width. 
     dimensions : string
         One of '2D' | '3D'
     fraction : string
@@ -35,6 +35,16 @@ def standard_specimen(spec_type, dimensions='2D', fraction='half', aw_ratio=0.5)
             'D': 23.5,
             'E': 60,
             'F': 37.5
+        },
+    'ct-1t-jacobs':{
+        'a/w': 0.5,
+            'W': 50,
+            'A': 62.5,
+            'B': 25,
+            'C': 12.5,
+            'D': 22.5,
+            'E': 60,
+            'F': 35.5
         },
     'ct-2t':{
             'a/w': 0.5,
@@ -74,7 +84,7 @@ def standard_specimen(spec_type, dimensions='2D', fraction='half', aw_ratio=0.5)
         elif fraction=='quarter':
             specimen['E'] *= 0.5
             specimen['B'] *= 0.5
-    elif spec_type[:4]=='char':
+    elif spec_type[:11]=='charpy-senb':
         if fraction=='half':
             specimen['L'] *= 0.5
         elif fraction=='quarter':
