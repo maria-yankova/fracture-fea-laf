@@ -888,6 +888,7 @@ def compact_tension_specimen_mesh(mesh_definition, dimensions, size_type, fracti
     Create a mesh for a compact tension specimen with a finite crack tip radius and a uniform refined mesh region.
 
     """
+    
     refined_mesh_definition = mesh.make_fine_plus_donut_mesh(
         mesh_definition['crack_tip_radius_microns'],
         mesh_definition['fine_mesh_length'],
@@ -918,43 +919,85 @@ def compact_tension_specimen_mesh(mesh_definition, dimensions, size_type, fracti
         dimensions=dimensions,
         fraction=fraction
     )
+    # print('size_type: ', size_type[3:-1])
+    dims_n = float(size_type[3:-1])
+    # print('dims_n', dims_n)
+    # Redefine dimenion D to be equal to half of the dimension W, in order to reflect the 
+    # a/w ratio of 0.5
+    specimen['D'] = specimen['W'] / 2
 
     tot_size_ref = (
         np.max(nd[:,0]) - np.min(nd[:,0]),
         np.max(nd[:,1]) - np.min(nd[:,1]),
     )
+    lim_maxx = np.abs(np.max(nd[:,0]))
+    lim_minx = np.abs(np.min(nd[:,0]))
+    print('lim_maxx: ', lim_maxx)
+    print('lim_minx: ', lim_minx)
 
-    exp_width = (specimen['A'] - tot_size_ref[0]) / 2
+    width_maxx = specimen['W'] - specimen['D']
+    width_minx = specimen['A'] - specimen['W'] + specimen['D']
+    print('width_maxx: ', width_maxx)
+    print('width_minx: ', width_minx)
+
+    exp_width_maxx = width_maxx - lim_maxx
+    exp_width_minx = width_minx - lim_minx 
+    # exp_width = (specimen['A'] - tot_size_ref[0]) / 2
     exp_height = (specimen['E'] - tot_size_ref[1])
 
-    num_lays_width = int(exp_width // 1)
-    width_lays_width = 1 + exp_width % 1 / num_lays_width
+    # num_lays_width = int(exp_width // 1)
+    # width_lays_width = 1 + exp_width % 1 / num_lays_width
+
+    num_lays_width_maxx = int(exp_width_maxx // 1)
+    width_lays_width_maxx = 1 + exp_width_maxx % 1 / num_lays_width_maxx
+    num_lays_width_minx = int(exp_width_minx // 1)
+    width_lays_width_minx = 1 + exp_width_minx % 1 / num_lays_width_minx
+
 
     num_lays_height = int(exp_height // 1)
     width_lays_height = 1 + exp_height % 1 / num_lays_height
 
     
-    for i in range(num_lays_width):
+    for i in range(num_lays_width_maxx):
         # find idx of border nodes
-        conds = ['minx', 'maxx']
+        conds = [
+             'maxx'
+        ]
 
         # expand directions (normal to border)
         expand_dirs = [
-            np.array([-1, 0]),
             np.array([1, 0])
         ]
 
         # start-end direction (parallel to border)
         end_dirs = [
-            np.array([0, 1]),
             np.array([0, 1])
         ]
 
         nd, ndlab, el, ellab = expand_mult_dirs(conds, expand_dirs, end_dirs, 
                                                 nd, ndlab, el, ellab,
-                                                num_layers=[1, 1], width=width_lays_width)
+                                                num_layers=[1,], width=width_lays_width_maxx)
 
+    for i in range(num_lays_width_minx):
+        # find idx of border nodes
+        conds = [
+            'minx',
+        ]
 
+        # expand directions (normal to border)
+        expand_dirs = [
+            np.array([-1, 0]),
+        ]
+
+        # start-end direction (parallel to border)
+        end_dirs = [
+            np.array([0, 1]),
+
+        ]
+
+        nd, ndlab, el, ellab = expand_mult_dirs(conds, expand_dirs, end_dirs, 
+                                                nd, ndlab, el, ellab,
+                                                num_layers=[1,], width=width_lays_width_minx)
     for i in range(num_lays_height):
         conds = ['maxy', ]
 
@@ -975,18 +1018,17 @@ def compact_tension_specimen_mesh(mesh_definition, dimensions, size_type, fracti
     
     # ****** ADD LOADING HOLE *******
     circ_centre = (
-         - (specimen['W'] - specimen['A'] / 2),
+        #  - (specimen['W'] - specimen['A'] / 2),
+         - specimen['D'],
         specimen['F'] / 2
     )
     circ_rad = specimen['C'] / 2
-
-    pts_on_circ = utils.circle_points(circ_rad, 80, circ_centre)
+    pts_on_circ = utils.circle_points(circ_rad, int(80 * dims_n), circ_centre)
     # pts_on_circ_ridge1 = utils.circle_points(circ_rad - 2, 80, circ_centre)
 
     # FIND NODES CLOSE TO HOLE
-    atol = 13
-    # print('atol: ', atol)
-    circ_tol = 0.2 #0.2
+    atol = specimen['C'] + 0.5 
+    circ_tol = 0.2 
     nd_dist_circ = (nd - circ_centre)[:,0] ** 2 + (nd - circ_centre)[:,1] ** 2
     pts_in_idx = np.nonzero(nd_dist_circ < (circ_rad - circ_tol) ** 2)
     pts_out_idx = np.nonzero(nd_dist_circ >= (circ_rad - circ_tol) ** 2 )[0]
@@ -1021,7 +1063,7 @@ def compact_tension_specimen_mesh(mesh_definition, dimensions, size_type, fracti
         # sub nodes with closest point on circle
         nd[pts_out_close_idx[i]] = pts_on_circ[np.argmin(dist)]
         # check if node is in top triangle for ridge
-        if pts_on_circ[np.argmin(dist)][1] > 22.0:
+        if pts_on_circ[np.argmin(dist)][1] > (2 * specimen['C'] - 3 * dims_n): #44.0:
             ridge_nd_top.append(pts_on_circ[np.argmin(dist)][None])
             ridge_ndlab_top.append(ndlab[pts_out_close_idx[i]])
 
@@ -1073,7 +1115,7 @@ def compact_tension_specimen_mesh(mesh_definition, dimensions, size_type, fracti
     ))
     rem_idx = np.concatenate((rem_idx, np.nonzero(np.all((np.isin(el, ndlab[pts_in_idx])), axis=1))[0] ))
     rem_idx = np.concatenate((rem_idx, rm_idx_small_el))
-
+    # rem_idx = rem_idx.astype('int32')
     el_h = np.delete(el_h, rem_idx, axis=0)
     ellab_h = np.delete(ellab_h, rem_idx, axis=0)
 
@@ -1216,7 +1258,6 @@ def bend_bar_specimen_mesh(refined_mesh_definition, dimensions, size_type, fract
 
     exp_width_maxx = width_maxx - lim_maxx
     exp_width_minx = width_minx - lim_minx
-    # exp_width = (specimen['W'] - tot_size_ref[0]) / 2
     exp_height = (specimen['L'] - tot_size_ref[1])
 
     num_lays_width_maxx = int(exp_width_maxx // 1)

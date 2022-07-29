@@ -24,8 +24,17 @@ def standard_specimen(spec_type, dimensions='2D', fraction='half', aw_ratio=0.5)
     ----------
     [1] Heerens J, Hellmann D. Development of the Euro fracture toughness dataset. Eng Fract Mech 2002;69:421–49. https://doi.org/10.1016/S0013-7944(01)00067-4.
     """
-    
     specimens_dims = {
+    'ct-0.5t':{
+            'a/w': 0.5,
+            'W': 25,
+            'A': 31.25,
+            'B': 12.5,
+            'C': 6.25,
+            'D': 10,
+            'E': 30,
+            'F': 18.75
+        },
     'ct-1t':{
             'a/w': 0.5,
             'W': 50,
@@ -36,7 +45,7 @@ def standard_specimen(spec_type, dimensions='2D', fraction='half', aw_ratio=0.5)
             'E': 60,
             'F': 37.5
         },
-    'ct-1t-jacobs':{
+    'ct-1t-prime':{
         'a/w': 0.5,
             'W': 50,
             'A': 62.5,
